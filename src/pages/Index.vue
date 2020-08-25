@@ -138,7 +138,7 @@ const lastday = new Date(curr.setDate(firstday.getDate() + 6));
 
 export default {
   metaInfo: {
-    title: "Hello, world!",
+    title: "Ansicht",
   },
   data: () => ({
     dateVon: firstday.toISOString().substr(0, 10),
