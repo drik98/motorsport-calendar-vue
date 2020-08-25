@@ -57,8 +57,8 @@
         </v-col>
       </v-row>
     </v-container>
-
-    <v-timeline>
+    <v-timeline 
+      :dense="toggleTimeLineDense">
       <v-timeline-item
         v-for="row in $page.allRennen.edges"
         :key="row.node.id"
@@ -70,7 +70,7 @@
         <v-card class="elevation-2">
           <v-card-title class="headline">{{row.node.Rennen}}</v-card-title>
           <v-card-subtitle>{{row.node.Informationen}}</v-card-subtitle>
-          <v-card-text>
+          <v-card-text class="renn-infos">
             <v-row v-if="row.node.Rennserie">
               <v-col md="3">
                 <v-icon>mdi-car-multiple</v-icon>Rennserie:
@@ -87,7 +87,7 @@
               <v-col md="3">
                 <v-icon>mdi-traffic-light</v-icon>Rennstart:
               </v-col>
-              <v-col md="9">{{row.node.Rennstart}}</v-col>
+              <v-col md="9"><span v-if="toggleTimeLineDense">{{row.node.Datum}}</span> {{row.node.Rennstart}}</v-col>
             </v-row>
             <v-row v-if="row.node.TV_und_Livestream">
               <v-col md="3">
@@ -145,7 +145,24 @@ export default {
     dateBis: lastday.toISOString().substr(0, 10),
     modalVon: false,
     modalBis: false,
+    toggleTimeLineDense: false
   }),
+  mounted() {
+    this.$nextTick(function () {
+      window.addEventListener("resize", this.setToggleTimeLineDense);
+
+      //Init
+      this.setToggleTimeLineDense();
+    });
+  },
+  methods: {
+    setToggleTimeLineDense(event) {
+      this.toggleTimeLineDense = document.documentElement.clientWidth < 576;
+    }
+  },
+  beforeDestroy() {
+    window.removeEventListener("resize", this.setToggleTimeLineDense);
+  },
 };
 </script>
 
@@ -153,5 +170,20 @@ export default {
 .v-timeline {
   width: 100%;
   padding: 10%;
+}
+.renn-infos .row {
+  flex-direction: column;
+}
+
+.v-card__title.headline {
+  font-size: 1.1em !important;
+}
+
+.renn-infos .col-md-9.col {
+  font-weight: bold;
+}
+
+.v-card__title.headline {
+  word-break: normal;
 }
 </style>
