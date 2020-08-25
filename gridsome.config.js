@@ -5,6 +5,10 @@
 // To restart press CTRL + C in terminal and run `gridsome develop`
 
 module.exports = {
-  siteName: 'Gridsome',
-  plugins: []
+  siteName: 'Motorsport Kalender',
+  siteUrl: 'https://motorsport-calendar.smtz.dev',
+  siteDescription: 'Visualize races of several racing series throughout the year',
+  plugins: [
+  
+  ]
 }

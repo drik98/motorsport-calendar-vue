@@ -7,6 +7,10 @@
     "explore": "gridsome explore"
   },
   "dependencies": {
-    "gridsome": "^0.7.0"
+    "gridsome": "^0.7.0",
+    "vuetify": "^2.3.9"
+  },
+  "devDependencies": {
+    "webpack-node-externals": "^2.5.1"
   }
 }
