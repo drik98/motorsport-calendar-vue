@@ -77,7 +77,7 @@
               </v-col>
               <v-col md="9">{{row.node.Rennserie}}</v-col>
             </v-row>
-            <v-row v-if="row.node.Austragungsort">
+            <v-row v-if="row.node.Ort">
               <v-col md="3">
                 <v-icon>mdi-map-marker-radius</v-icon>Austragungsort:
               </v-col>
