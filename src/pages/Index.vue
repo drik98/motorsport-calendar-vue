@@ -57,8 +57,7 @@
         </v-col>
       </v-row>
     </v-container>
-    <v-timeline 
-      :dense="toggleTimeLineDense">
+    <v-timeline :dense="toggleTimeLineDense">
       <v-timeline-item
         v-for="row in $page.allRennen.edges"
         :key="row.node.id"
@@ -87,7 +86,10 @@
               <v-col md="3">
                 <v-icon>mdi-traffic-light</v-icon>Rennstart:
               </v-col>
-              <v-col md="9"><span v-if="toggleTimeLineDense">{{row.node.Datum}}</span> {{row.node.Rennstart}}</v-col>
+              <v-col md="9">
+                <span v-if="toggleTimeLineDense">{{row.node.Datum}}</span>
+                {{row.node.Rennstart}}
+              </v-col>
             </v-row>
             <v-row v-if="row.node.TV_und_Livestream">
               <v-col md="3">
@@ -145,7 +147,7 @@ export default {
     dateBis: lastday.toISOString().substr(0, 10),
     modalVon: false,
     modalBis: false,
-    toggleTimeLineDense: false
+    toggleTimeLineDense: false,
   }),
   mounted() {
     this.$nextTick(function () {
@@ -158,7 +160,7 @@ export default {
   methods: {
     setToggleTimeLineDense(event) {
       this.toggleTimeLineDense = document.documentElement.clientWidth < 576;
-    }
+    },
   },
   beforeDestroy() {
     window.removeEventListener("resize", this.setToggleTimeLineDense);
@@ -171,13 +173,6 @@ export default {
   width: 100%;
   padding: 10%;
 }
-.renn-infos .row {
-  flex-direction: column;
-}
-
-.v-card__title.headline {
-  font-size: 1.1em !important;
-}
 
 .renn-infos .col-md-9.col {
   font-weight: bold;
@@ -185,5 +180,14 @@ export default {
 
 .v-card__title.headline {
   word-break: normal;
+}
+@media (max-width: 480px) {
+  .renn-infos .row {
+    flex-direction: column;
+  }
+
+  .v-card__title.headline {
+    font-size: 1.1em !important;
+  }
 }
 </style>
