@@ -66,7 +66,7 @@
         v-if="Date.parse(row.node.date) >= Date.parse(dateVon) && Date.parse(row.node.date) <= Date.parse(`${dateBis} 23:59:59`) "
       >
         <span slot="opposite">{{row.node.Datum}}</span>
-        <v-card class="elevation-2">
+        <v-card class="elevation-2" :disabled="Date.parse(row.node.date) < Date.now()">
           <v-card-title class="headline">{{row.node.Rennen}}</v-card-title>
           <v-card-subtitle>{{row.node.Informationen}}</v-card-subtitle>
           <v-card-text class="renn-infos">
