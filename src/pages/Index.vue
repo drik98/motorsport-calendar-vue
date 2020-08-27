@@ -63,7 +63,7 @@
         :key="row.node.id"
         :icon="'mdi-flag-checkered'"
         :color=" Date.parse(row.node.date) < Date.now() ? 'grey': 'deep-orange'"
-        v-if="Date.parse(row.node.date) >= Date.parse(dateVon) && Date.parse(row.node.date) <= Date.parse(dateBis) "
+        v-if="Date.parse(row.node.date) >= Date.parse(dateVon) && Date.parse(row.node.date) <= Date.parse(`${dateBis} 23:59:59`) "
       >
         <span slot="opposite">{{row.node.Datum}}</span>
         <v-card class="elevation-2">
