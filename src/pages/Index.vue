@@ -102,7 +102,7 @@
                   <v-icon>mdi-traffic-light</v-icon>Rennstart:
                 </v-col>
                 <v-col md="9">
-                  <span v-show="toggleTimeLineDense">{{ race.Datum }}</span>
+                  <span v-show="toggleTimeLineDense">{{ race.Start }}</span>
                   {{ race.Rennstart }}
                 </v-col>
               </v-row>
