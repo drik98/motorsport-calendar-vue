@@ -25,8 +25,12 @@
             </template>
             <v-date-picker v-model="dateVon" scrollable>
               <v-spacer></v-spacer>
-              <v-btn text color="primary" @click="modalVon = false">Cancel</v-btn>
-              <v-btn text color="primary" @click="$refs.dialogVon.save(dateVon)">OK</v-btn>
+              <v-btn text color="primary" @click="modalVon = false"
+                >Cancel</v-btn
+              >
+              <v-btn text color="primary" @click="$refs.dialogVon.save(dateVon)"
+                >OK</v-btn
+              >
             </v-date-picker>
           </v-dialog>
         </v-col>
@@ -50,8 +54,12 @@
             </template>
             <v-date-picker v-model="dateBis" scrollable>
               <v-spacer></v-spacer>
-              <v-btn text color="primary" @click="modalBis = false">Cancel</v-btn>
-              <v-btn text color="primary" @click="$refs.dialogBis.save(dateBis)">OK</v-btn>
+              <v-btn text color="primary" @click="modalBis = false"
+                >Cancel</v-btn
+              >
+              <v-btn text color="primary" @click="$refs.dialogBis.save(dateBis)"
+                >OK</v-btn
+              >
             </v-date-picker>
           </v-dialog>
         </v-col>
@@ -59,49 +67,51 @@
     </v-container>
     <v-timeline :dense="toggleTimeLineDense">
       <v-timeline-item
-        v-for="row in $page.allRennen.edges"
-        :key="row.node.id"
+        v-for="race in selectedEvents"
+        :key="race.id"
         :icon="'mdi-flag-checkered'"
-        :color=" Date.parse(row.node.date) < Date.now() ? 'grey': 'deep-orange'"
-        v-if="Date.parse(row.node.date) >= Date.parse(dateVon) && Date.parse(row.node.date) <= Date.parse(`${dateBis} 23:59:59`) "
+        :color="Date.parse(race.date) < Date.now() ? 'grey' : 'deep-orange'"
       >
-        <span slot="opposite">{{row.node.Datum}}</span>
-        <v-card class="elevation-2" :disabled="Date.parse(row.node.date) < Date.now()">
-          <v-card-title class="headline">{{row.node.Rennen}}</v-card-title>
-          <v-card-subtitle>{{row.node.Informationen}}</v-card-subtitle>
+        <span slot="opposite">{{ race.Datum }}</span>
+        <v-card
+          class="elevation-2"
+          :disabled="Date.parse(race.date) < Date.now()"
+        >
+          <v-card-title class="headline">{{ race.Rennen }}</v-card-title>
+          <v-card-subtitle>{{ race.Informationen }}</v-card-subtitle>
           <v-card-text class="renn-infos">
-            <v-row v-if="row.node.Rennserie">
+            <v-row v-show="race.Rennserie">
               <v-col md="3">
                 <v-icon>mdi-car-multiple</v-icon>Rennserie:
               </v-col>
-              <v-col md="9">{{row.node.Rennserie}}</v-col>
+              <v-col md="9">{{ race.Rennserie }}</v-col>
             </v-row>
-            <v-row v-if="row.node.Ort">
+            <v-row v-show="race.Ort">
               <v-col md="3">
                 <v-icon>mdi-map-marker-radius</v-icon>Austragungsort:
               </v-col>
-              <v-col md="9">{{row.node.Ort}}</v-col>
+              <v-col md="9">{{ race.Ort }}</v-col>
             </v-row>
-            <v-row v-if="row.node.Rennstart">
+            <v-row v-show="race.Rennstart">
               <v-col md="3">
                 <v-icon>mdi-traffic-light</v-icon>Rennstart:
               </v-col>
               <v-col md="9">
-                <span v-if="toggleTimeLineDense">{{row.node.Datum}}</span>
-                {{row.node.Rennstart}}
+                <span v-show="toggleTimeLineDense">{{ race.Datum }}</span>
+                {{ race.Rennstart }}
               </v-col>
             </v-row>
-            <v-row v-if="row.node.TV_und_Livestream">
+            <v-row v-show="race.TV_und_Livestream">
               <v-col md="3">
                 <v-icon>mdi-youtube-tv</v-icon>Übertragung:
               </v-col>
-              <v-col md="9">{{row.node.TV_und_Livestream}}</v-col>
+              <v-col md="9">{{ race.TV_und_Livestream }}</v-col>
             </v-row>
-            <v-row v-if="row.node.public_viewing">
+            <v-row v-show="race.public_viewing">
               <v-col md="3">
                 <v-icon>mdi-account-multiple</v-icon>Public viewing:
               </v-col>
-              <v-col md="9">{{row.node.public_viewing}}</v-col>
+              <v-col md="9">{{ race.public_viewing }}</v-col>
             </v-row>
           </v-card-text>
         </v-card>
@@ -117,6 +127,8 @@ query {
       node {
         id
         date
+        Start
+        Ende
         Rennen
         Rennstart
         Datum
@@ -149,6 +161,22 @@ export default {
     modalBis: false,
     toggleTimeLineDense: false,
   }),
+  computed: {
+    selectedEvents() {
+      const dateVon = Date.parse(this.dateVon);
+      const dateBis = Date.parse(`${this.dateBis} 23:59:59`);
+      return this.$page.allRennen.edges
+        .map((edge) => edge.node)
+        .filter((node) => {
+          return (
+            (Date.parse(node.Start) >= dateVon &&
+              Date.parse(node.Start) <= dateBis) ||
+            (Date.parse(node.Ende) >= dateVon &&
+              Date.parse(node.Ende) <= dateBis)
+          );
+        });
+    },
+  },
   mounted() {
     this.$nextTick(function () {
       window.addEventListener("resize", this.setToggleTimeLineDense);

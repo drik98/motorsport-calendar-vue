@@ -8,11 +8,15 @@
 const nodeExternals = require('webpack-node-externals')
 const { google } = require('googleapis')
 
+
 // key for google sheets
 const AUTH_KEY = process.env.AUTH_KEY
 // id of the google sheet
 const SPREADSHEET_ID = process.env.SPREADSHEET_ID
 
+function formatDate( input ) {
+  return input.trim().split(".").reverse().join("-");
+}
 
 module.exports = function (api) {
 
@@ -32,7 +36,10 @@ module.exports = function (api) {
             sheetName: "Motorsportkalender",
             collectionName: "Rennen", // (Must be unique)
             mapper: value => {
-              value.date = `${value.Datum.split(".").reverse().join("-")} ${value.Rennstart}`.trim()
+              const split = value.Datum.split("-");
+              value.Start = formatDate(split[0])
+              value.Ende = split.length > 1 ? formatDate(split[1]) : value.Start;
+              value.date = `${value.Start} ${value.Rennstart}`.trim()
               return value;
             },
             sorter: (a, b) => {
