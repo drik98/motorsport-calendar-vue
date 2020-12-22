@@ -8,6 +8,12 @@
 const nodeExternals = require('webpack-node-externals')
 const { google } = require('googleapis')
 
+
+// key for google sheets
+const AUTH_KEY = process.env.AUTH_KEY
+// id of the google sheet
+const SPREADSHEET_ID = process.env.SPREADSHEET_ID
+
 function formatDate( input ) {
   return input.trim().split(".").reverse().join("-");
 }
@@ -19,12 +25,12 @@ module.exports = function (api) {
     // acces data from google sheets using api key
     const spreadsheetData = google.sheets({
       version: 'v4',
-      auth: 'AIzaSyCMqL_VdEhUJas4hhnyuZ8gwTIiNNqCb48'
+      auth: AUTH_KEY
     })
 
     const spreadsheets = [
       {
-        spreadsheetId: "1kLla2QUzESLlniVipaItOf8IYDGhwPA4YlKxNffRyYI",
+        spreadsheetId: SPREADSHEET_ID,
         sheets: [
           {
             sheetName: "Motorsportkalender",
