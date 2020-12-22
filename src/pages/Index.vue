@@ -65,58 +65,64 @@
         </v-col>
       </v-row>
     </v-container>
-    <v-timeline :dense="toggleTimeLineDense">
-      <v-timeline-item
-        v-for="race in selectedEvents"
-        :key="race.id"
-        :icon="'mdi-flag-checkered'"
-        :color="Date.parse(race.date) < Date.now() ? 'grey' : 'deep-orange'"
-      >
-        <span slot="opposite">{{ race.Datum }}</span>
-        <v-card
-          class="elevation-2"
-          :disabled="Date.parse(race.date) < Date.now()"
+    <v-container d-flex justify-center>
+      <v-alert v-if="noEventSelected" type="warning"
+        >Keine Rennen im ausgewählten Zeitraum ({{ dateVon }} - {{ dateBis }})
+        vorhanden.
+      </v-alert>
+      <v-timeline v-else :dense="toggleTimeLineDense">
+        <v-timeline-item
+          v-for="race in selectedEvents"
+          :key="race.id"
+          :icon="'mdi-flag-checkered'"
+          :color="Date.parse(race.date) < Date.now() ? 'grey' : 'deep-orange'"
         >
-          <v-card-title class="headline">{{ race.Rennen }}</v-card-title>
-          <v-card-subtitle>{{ race.Informationen }}</v-card-subtitle>
-          <v-card-text class="renn-infos">
-            <v-row v-show="race.Rennserie">
-              <v-col md="3">
-                <v-icon>mdi-car-multiple</v-icon>Rennserie:
-              </v-col>
-              <v-col md="9">{{ race.Rennserie }}</v-col>
-            </v-row>
-            <v-row v-show="race.Ort">
-              <v-col md="3">
-                <v-icon>mdi-map-marker-radius</v-icon>Austragungsort:
-              </v-col>
-              <v-col md="9">{{ race.Ort }}</v-col>
-            </v-row>
-            <v-row v-show="race.Rennstart">
-              <v-col md="3">
-                <v-icon>mdi-traffic-light</v-icon>Rennstart:
-              </v-col>
-              <v-col md="9">
-                <span v-show="toggleTimeLineDense">{{ race.Datum }}</span>
-                {{ race.Rennstart }}
-              </v-col>
-            </v-row>
-            <v-row v-show="race.TV_und_Livestream">
-              <v-col md="3">
-                <v-icon>mdi-youtube-tv</v-icon>Übertragung:
-              </v-col>
-              <v-col md="9">{{ race.TV_und_Livestream }}</v-col>
-            </v-row>
-            <v-row v-show="race.public_viewing">
-              <v-col md="3">
-                <v-icon>mdi-account-multiple</v-icon>Public viewing:
-              </v-col>
-              <v-col md="9">{{ race.public_viewing }}</v-col>
-            </v-row>
-          </v-card-text>
-        </v-card>
-      </v-timeline-item>
-    </v-timeline>
+          <span slot="opposite">{{ race.Datum }}</span>
+          <v-card
+            class="elevation-2"
+            :disabled="Date.parse(race.date) < Date.now()"
+          >
+            <v-card-title class="headline">{{ race.Rennen }}</v-card-title>
+            <v-card-subtitle>{{ race.Informationen }}</v-card-subtitle>
+            <v-card-text class="renn-infos">
+              <v-row v-show="race.Rennserie">
+                <v-col md="3">
+                  <v-icon>mdi-car-multiple</v-icon>Rennserie:
+                </v-col>
+                <v-col md="9">{{ race.Rennserie }}</v-col>
+              </v-row>
+              <v-row v-show="race.Ort">
+                <v-col md="3">
+                  <v-icon>mdi-map-marker-radius</v-icon>Austragungsort:
+                </v-col>
+                <v-col md="9">{{ race.Ort }}</v-col>
+              </v-row>
+              <v-row v-show="race.Rennstart">
+                <v-col md="3">
+                  <v-icon>mdi-traffic-light</v-icon>Rennstart:
+                </v-col>
+                <v-col md="9">
+                  <span v-show="toggleTimeLineDense">{{ race.Datum }}</span>
+                  {{ race.Rennstart }}
+                </v-col>
+              </v-row>
+              <v-row v-show="race.TV_und_Livestream">
+                <v-col md="3">
+                  <v-icon>mdi-youtube-tv</v-icon>Übertragung:
+                </v-col>
+                <v-col md="9">{{ race.TV_und_Livestream }}</v-col>
+              </v-row>
+              <v-row v-show="race.public_viewing">
+                <v-col md="3">
+                  <v-icon>mdi-account-multiple</v-icon>Public viewing:
+                </v-col>
+                <v-col md="9">{{ race.public_viewing }}</v-col>
+              </v-row>
+            </v-card-text>
+          </v-card>
+        </v-timeline-item>
+      </v-timeline>
+    </v-container>
   </Layout>
 </template>
 
@@ -176,9 +182,12 @@ export default {
           );
         });
     },
+    noEventSelected() {
+      return this.selectedEvents.length === 0;
+    },
   },
   mounted() {
-    this.$nextTick(function () {
+    this.$nextTick(function() {
       window.addEventListener("resize", this.setToggleTimeLineDense);
 
       //Init
