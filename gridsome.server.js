@@ -8,6 +8,10 @@
 const nodeExternals = require('webpack-node-externals')
 const { google } = require('googleapis')
 
+function formatDate( input ) {
+  return input.trim().split(".").reverse().join("-");
+}
+
 module.exports = function (api) {
 
   api.loadSource(async actions => {
@@ -26,7 +30,10 @@ module.exports = function (api) {
             sheetName: "Motorsportkalender",
             collectionName: "Rennen", // (Must be unique)
             mapper: value => {
-              value.date = `${value.Datum.split(".").reverse().join("-")} ${value.Rennstart}`.trim()
+              const split = value.Datum.split("-");
+              value.Start = formatDate(split[0])
+              value.Ende = split.length > 1 ? formatDate(split[1]) : value.Start;
+              value.date = `${value.Start} ${value.Rennstart}`.trim()
               return value;
             },
             sorter: (a, b) => {
