@@ -14,8 +14,39 @@ const AUTH_KEY = process.env.AUTH_KEY
 // id of the google sheet
 const SPREADSHEET_ID = process.env.SPREADSHEET_ID
 
-function formatDate( input ) {
+function formatDate(input) {
   return input.trim().split(".").reverse().join("-");
+}
+
+function createJcal(api, races) {
+  const jcal = ["vcalendar",
+    [
+      ["version", {}, "text", "2.0"],
+      ["prodid", {}, "text", "-//Microsoft Corporation//Outlook 14.0 MIMEDIR//EN"]
+    ],
+    races.map(race => {
+      const duration = race.Rennen.includes("24") ? 24 : 2;
+      const start = race.date.replace(" ", "T");
+      return [
+        "vevent",
+        [
+          ["uid", {}, "text", race.id],
+          ["dtstamp", {}, "date-time", start],
+          ["dtstart", {}, "date-time", start],
+          ["dtend", {}, "date", race.Ende],
+          ["duration", {}, "duration", `PT${duration}H`],
+          ["summary", { "language": "de-DE" }, "text", race.Rennen],
+          ["description", {}, "text", race.Informationen],
+          ["location", {}, "text", race.Ort]
+        ]
+      ];
+    })
+  ];
+  api.configureServer(app => {
+    app.get('/jcal.json', (req, res) => {
+      res.send(jcal);
+    })
+  })
 }
 
 module.exports = function (api) {
@@ -44,7 +75,8 @@ module.exports = function (api) {
             },
             sorter: (a, b) => {
               return Date.parse(a.date) - Date.parse(b.date)
-            }
+            },
+            createJcal: createJcal
           }
         ]
       }
@@ -81,6 +113,8 @@ module.exports = function (api) {
                 .map(value => {
                   collection.addNode(value)
                 })
+
+              sheet.createJcal(api, nodes);
             })
             .catch(err => console.log(err))
         })
@@ -102,4 +136,6 @@ module.exports = function (api) {
   api.createPages(({ createPage }) => {
     // Use the Pages API here: https://gridsome.org/docs/pages-api/
   })
+
+
 }
