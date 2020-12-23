@@ -11,6 +11,7 @@
     "gridsome": "^0.7.20",
     "ics": "^2.26.2",
     "moment": "^2.29.1",
+    "moment-timezone": "^0.5.32",
     "vuetify": "^2.3.9"
   },
   "devDependencies": {

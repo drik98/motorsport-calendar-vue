@@ -10,7 +10,7 @@ const { google } = require('googleapis')
 const path = require('path');
 const fs = require('fs');
 const ics = require('ics')
-const moment = require('moment');
+const moment = require('moment-timezone');
 
 // key for google sheets
 const AUTH_KEY = process.env.AUTH_KEY
@@ -26,17 +26,19 @@ function createJcal(api, races) {
   const { error, value } = ics.createEvents(
     races.map(race => {
       const duration = race.Rennen.includes("24") ? 24 : 2;
-      const start = moment(`${race.Start}${race.Rennstart?`T${race.Rennstart}`:''}`);
-      let ende = moment(race.Ende);
+      const start = moment.tz(`${race.Start}${race.Rennstart?`T${race.Rennstart}`:''}`, "Europe/Berlin");
+      let ende = moment.tz(race.Ende, "Europe/Berlin");
       if(start.isSame(ende) || duration==24) {
         ende = moment(start).add(duration, "hours");
       }
       return {
         title: race.Rennen,
-        start: start.format('YYYY-M-D-H-m').split("-"),
-        end: ende.format('YYYY-M-D-H-m').split("-"),
+        start: start.utc().format('YYYY-M-D-H-m').split("-"),
+        end: ende.utc().format('YYYY-M-D-H-m').split("-"),
         description: race.Informationen,
-        location: race.Ort
+        location: race.Ort,
+        startInputType: 'utc',
+        endInputType: 'utc'
       };
     })
   );
@@ -47,7 +49,7 @@ function createJcal(api, races) {
   }
 
   api.afterBuild(async ({ config }) => {
-    const outFile = path.join(config.outputDir, 'cal.ics')
+    const outFile = path.join(config.outputDir, 'ical.ics')
     await fs.writeFile(outFile, value, ()=>{});
   })
 }
