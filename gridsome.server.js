@@ -9,6 +9,8 @@ const nodeExternals = require('webpack-node-externals')
 const { google } = require('googleapis')
 const path = require('path');
 const fs = require('fs');
+const ics = require('ics')
+const moment = require('moment');
 
 // key for google sheets
 const AUTH_KEY = process.env.AUTH_KEY
@@ -20,33 +22,35 @@ function formatDate(input) {
 }
 
 function createJcal(api, races) {
-  const jcal = ["vcalendar",
-    [
-      ["version", {}, "text", "2.0"],
-      ["prodid", {}, "text", "-//Microsoft Corporation//Outlook 14.0 MIMEDIR//EN"]
-    ],
+
+  const { error, value } = ics.createEvents(
     races.map(race => {
       const duration = race.Rennen.includes("24") ? 24 : 2;
-      const start = race.date.replace(" ", "T");
-      return [
-        "vevent",
-        [
-          ["uid", {}, "text", race.id],
-          ["dtstamp", {}, "date-time", start],
-          ["dtstart", {}, "date-time", start],
-          ["dtend", {}, "date", race.Ende],
-          ["duration", {}, "duration", `PT${duration}H`],
-          ["summary", { "language": "de-DE" }, "text", race.Rennen],
-          ["description", {}, "text", race.Informationen],
-          ["location", {}, "text", race.Ort]
-        ]
-      ];
+      const start = moment(`${race.Start}${race.Rennstart?`T${race.Rennstart}`:''}`);
+      let ende = moment(race.Ende);
+      if(start.isSame(ende)) {
+        ende = moment(start).add(duration, "hours");
+      }
+      console.log(start);
+      console.log(ende);
+      return {
+        title: race.Rennen,
+        start: start.format('YYYY-M-D-H-m').split("-"),
+        end: ende.format('YYYY-M-D-H-m').split("-"),
+        description: race.Informationen,
+        location: race.Ort
+      };
     })
-  ];
+  );
+  
+  if (error) {
+    console.log(error)
+    return
+  }
 
   api.afterBuild(async ({ config }) => {
-    const outFile = path.join(config.outputDir, 'jcal.json')
-    await fs.writeFile(outFile, JSON.stringify(jcal,null,2), console.error)
+    const outFile = path.join(config.outputDir, 'cal.ics')
+    await fs.writeFile(outFile, value, ()=>{});
   })
 }
 

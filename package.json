@@ -9,6 +9,8 @@
   "dependencies": {
     "googleapis": "^59.0.0",
     "gridsome": "^0.7.20",
+    "ics": "^2.26.2",
+    "moment": "^2.29.1",
     "vuetify": "^2.3.9"
   },
   "devDependencies": {
