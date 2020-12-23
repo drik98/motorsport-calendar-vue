@@ -7,7 +7,8 @@
 
 const nodeExternals = require('webpack-node-externals')
 const { google } = require('googleapis')
-
+const path = require('path');
+const fs = require('fs');
 
 // key for google sheets
 const AUTH_KEY = process.env.AUTH_KEY
@@ -42,10 +43,10 @@ function createJcal(api, races) {
       ];
     })
   ];
-  api.configureServer(app => {
-    app.get('/jcal.json', (req, res) => {
-      res.send(jcal);
-    })
+
+  api.afterBuild(async ({ config }) => {
+    const outFile = path.join(config.outputDir, 'jcal.json')
+    await fs.writeFile(outFile, JSON.stringify(jcal,null,2), console.error)
   })
 }
 
