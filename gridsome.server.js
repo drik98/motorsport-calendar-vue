@@ -28,11 +28,9 @@ function createJcal(api, races) {
       const duration = race.Rennen.includes("24") ? 24 : 2;
       const start = moment(`${race.Start}${race.Rennstart?`T${race.Rennstart}`:''}`);
       let ende = moment(race.Ende);
-      if(start.isSame(ende)) {
+      if(start.isSame(ende) || duration==24) {
         ende = moment(start).add(duration, "hours");
       }
-      console.log(start);
-      console.log(ende);
       return {
         title: race.Rennen,
         start: start.format('YYYY-M-D-H-m').split("-"),
