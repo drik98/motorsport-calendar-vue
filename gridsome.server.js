@@ -75,7 +75,8 @@ module.exports = function (api) {
               const split = value.Datum.split("-");
               value.Start = formatDate(split[0])
               value.Ende = split.length > 1 ? formatDate(split[1]) : value.Start;
-              value.date = `${value.Start} ${value.Rennstart}`.trim()
+              value.date = `${value.Start} ${value.Rennstart}`.trim();
+              value.public_viewing = value.public_viewing || '';
               return value;
             },
             sorter: (a, b) => {
